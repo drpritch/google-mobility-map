@@ -128,11 +128,17 @@
       displayformat = d3.format("." + dvc.essential.displaydecimals + "f");
 
 
-      chosenCountries = ["UK", "Spain", "Italy", "Germany", "France", "USA"]
+      chosenCountries = ["Italy", "Spain", "France", "Germany", "United Kingdom", "Canada", "United States"]
 
       just6 = graphic_data.filter(function(d) {
-        return chosenCountries.contains(d.Country);
-      })
+        return chosenCountries.contains(d.location);
+      }).sort(function(a,b) {
+        idxA = chosenCountries.indexOf(a.location);
+        idxB = chosenCountries.indexOf(b.location);
+        if (idxA < idxB) return -1;
+        if (idxA > idxB) return 1;
+        return 0;
+      });
 
       columnDates = Object.keys(graphic_data[0]).filter(function(d) {
         return /^[A-Z]/i.test(d) == false;
@@ -147,10 +153,12 @@
 
       nested = d3.nest()
         .key(function(d) {
-          return d.Category
+          return d.category
         })
         .key(function(d) {
-          return d.Country
+          if(d.location=="United Kingdom") return "UK";
+          if(d.location=="United States") return "USA";
+          return d.location
         })
         .entries(just6)
 
@@ -527,7 +535,7 @@
       d3.json("config.json", function(error, config) {
         dvc = config;
 
-        d3.csv("https://raw.githubusercontent.com/datasciencecampus/google-mobility-reports-data/master/csvs/international_national_trends_G20_SE.csv", function(error, data) {
+        d3.csv("https://raw.githubusercontent.com/datasciencecampus/google-mobility-reports-data/master/csvs/international_national_trends_G20_20200410.csv", function(error, data) {
 
           graphic_data = data;
 
